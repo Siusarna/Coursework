@@ -19,9 +19,6 @@ vector<string> Open_Parce(string path) {
 			getline(fin, str);
 			arr.push_back(str);
 		}
-		for (int i = 0; i < arr.size(); i++) {
-			cout << arr[i] << endl;
-		}
 		return arr;
 	}
 }
