@@ -1,12 +1,11 @@
 #include<iostream>
 #include <string>
 #include <vector>
-#include "Open_Parce_Input.h"
-#include "Queue.h"
+#include "Robot.h"
 using namespace std;
 
 int main() {
-	vector<string> arr;
-	arr = Open_Parce("dict_processed.txt");
+	Robot text_editor("recipe.txt", "text.txt");
+	text_editor.start_work();
 	system("pause");
 }
