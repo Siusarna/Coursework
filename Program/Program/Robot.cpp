@@ -59,3 +59,44 @@ vector<string> Open_Text(string path) {
 		return q;
 	}
 }
+
+void Robot::delete_text(option recipe) {
+	int from;
+	int to;
+	parce_for_delete(recipe.row, from, to);
+	this->text.erase(this->text.begin + from, this->text.begin + to);
+}
+
+void Robot::parce_for_delete(string recipe, int &from, int &to) {
+	if (recipe.find("from") == string::npos) from = 0;
+	if (recipe.find("to") == string::npos) to = this->text.size()-1;
+	if (from != 0 && to != 0) return;
+	string temp;
+	stringstream s(recipe);
+	do {
+		getline(s, temp, ' ');
+		if (temp == "from") {
+			getline(s, temp, ' ');
+			try
+			{
+				from = stoi(temp);
+			}
+			catch (const std::exception&)
+			{
+				cout << "Error";
+			}
+			
+		}
+		if (temp == "to") {
+			getline(s, temp, ' ');
+			try
+			{
+				to = stoi(temp);
+			}
+			catch (const std::exception&)
+			{
+				cout << "Error";
+			}
+		}
+	} while (getline(s, temp, ' '));
+}
