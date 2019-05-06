@@ -1,7 +1,7 @@
-#pragma once
 #include <queue>
 #include <vector>
 #include <string>
+
 using namespace std;
 
 struct option
@@ -29,6 +29,9 @@ private:
 	void parce_for_change(string recipe, int &from, int &to, vector<string> &text_for_change);
 	void parce_for_insert(string recipe, int &after, vector<string> &text_for_insert);
 	void parce_for_replace(string recipe, int &from, int &to, vector<string> &text_from, vector<string> &text_to);
+
+	vector<string> Open_Text(string path);
+	queue<option> Open_Recipe(string path);
 	
 };
 
