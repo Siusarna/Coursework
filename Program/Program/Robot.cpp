@@ -62,15 +62,15 @@ vector<string> Robot::Open_Text(string path) {
 }
 
 void Robot::delete_text(option recipe) {
-	int from;
-	int to;
+	int from =0;
+	int to =0;
 	parce_for_delete(recipe.row, from, to);
 	this->text.erase(this->text.begin() + from, this->text.begin() + to);
 }
 
 void Robot::parce_for_delete(string recipe, int &from, int &to) {
 	if (recipe.find("from") == string::npos) from = 0;
-	if (recipe.find("to") == string::npos) to = this->text.size()-1;
+	if (recipe.find("to") == string::npos) to = this->text.size();
 	if (from != 0 && to != 0) return;
 	string temp;
 	stringstream s(recipe);
@@ -107,11 +107,19 @@ void Robot::change_text(option recipe) {
 	int to;
 	vector<string> text_for_change;
 	parce_for_change(recipe.row, from, to, text_for_change);
-	if (to > text_for_change.size()) {
-		this->text.erase(this->text.begin() + text_for_change.size() - 1, this->text.begin() + to - 1);
+	if ((to - from) > text_for_change.size()) {
+		this->text.erase(this->text.begin() + text_for_change.size() , this->text.begin() + to);
+		for (unsigned int i = 0; i < text_for_change.size(); i++) {
+			this->text[i + from - 1] = text_for_change[i];
+		}
 	}
-	for (unsigned int i = from - 1; i < text_for_change.size(); i++) {
-		this->text[i] = text_for_change[i - from + 1];
+	else {
+		for (unsigned int i = from-1; i < to; i++) {
+			this->text[i] = text_for_change[i];
+		}
+		for (unsigned int i = to; i < text_for_change.size(); i++) {
+			this->text.insert(this->text.begin() + i, text_for_change[i]);
+		}
 	}
 }
 
@@ -127,7 +135,6 @@ void Robot::parce_for_change(string recipe, int &from, int &to, vector<string> &
 			try
 			{
 				from = stoi(temp);
-				cout << from << endl;
 			}
 			catch (const std::exception&)
 			{
@@ -140,7 +147,6 @@ void Robot::parce_for_change(string recipe, int &from, int &to, vector<string> &
 			try
 			{
 				to = stoi(temp);
-				cout << to << endl;
 			}
 			catch (const std::exception&)
 			{
@@ -149,12 +155,26 @@ void Robot::parce_for_change(string recipe, int &from, int &to, vector<string> &
 		}
 		if (temp == "with") {
 			getline(s, temp, '"');
-			getline(s, temp, '"');
-			stringstream ss(temp);
-			getline(ss, temp1, '\n');
-			do {
-				text_for_change.push_back(temp1);
-			} while (getline(ss, temp1, '\n'));
+			getline(s, temp);
+			temp1 = "";
+			for (int i = 0; i < temp.size(); i++) {
+				if (temp[i] == '\\' && temp[i + 1] == 'n') {
+					text_for_change.push_back(temp1);
+					i++;
+					temp1.clear();
+				}
+				else if (temp[i] == '\\' && temp[i + 1] == '"') {
+					temp1 += '"';
+					i++;
+				}
+				else if (temp[i] == '\\' && temp[i + 1] == '\\') {
+					temp += '\\';
+				}
+				else if (temp[i] == '\\') {
+					temp1 += '\\';
+				}
+				else temp1 += temp[i];
+			}
 		}
 	} while (getline(s, temp, ' '));
 }
@@ -165,7 +185,8 @@ void Robot::insert_text(option recipe) {
 	parce_for_insert(recipe.row, after, text_for_insert);
 	int k = 0;
 	for (unsigned int i = 0; i < text_for_insert.size(); i++) {
-		this->text.insert(this->text.begin()+after+k, text_for_insert[0]);
+		this->text.insert(this->text.begin()+after+k, text_for_insert[k]);
+		k++;
 	}
 }
 
@@ -185,12 +206,26 @@ void Robot::parce_for_insert(string recipe, int &after, vector<string> &text_for
 				cout << "Error";
 			}
 			getline(s, temp, '"');
-			getline(s, temp, '"');
-			stringstream ss(temp);
-			getline(ss, temp1, '\n');
-			do {
-				text_for_insert.push_back(temp1);
-			} while (getline(ss, temp1, '\n'));
+			getline(s, temp);
+			temp1 = "";
+			for (int i = 0; i < temp.size(); i++) {
+				if (temp[i] == '\\' && temp[i + 1] == 'n') {
+					text_for_insert.push_back(temp1);
+					i++;
+					temp1.clear();
+				}
+				else if (temp[i] == '\\' && temp[i + 1] == '"') {
+					temp1 += '"';
+					i++;
+				}
+				else if (temp[i] == '\\' && temp[i + 1] == '\\') {
+					temp += '\\';
+				}
+				else if (temp[i] == '\\') {
+					temp1 += '\\';
+				}
+				else temp1 += temp[i];
+			}
 		}
 	} while (getline(s, temp, ' '));
 }
@@ -276,13 +311,18 @@ queue<option> reversQueue(queue<option> q) {
 void Robot::start_work() {
 	queue<option> temp = reversQueue(this->que);
 	string str;
-	while(!temp.empty()) {
+	queue<option> temp1;
+	for(unsigned int i=0;i<temp.size();i++) {
 		if (temp.front().word == "undo") {
 			temp.pop();
 			temp.pop();
 		}
+		else {
+			temp1.push(temp.front());
+			temp.pop();
+		}
 	}
-	this->que = reversQueue(temp);
+	this->que = reversQueue(temp1);
 	while (!this->que.empty()){
 		str = this->que.front().word;
 		if (str == "delete") delete_text(this->que.front());
@@ -295,4 +335,10 @@ void Robot::start_work() {
 	for (int i = 0; i < this->text.size(); i++) {
 		out << this->text[i] << "\n";
 	}
+}
+
+Robot::Robot(string path_recipe, string path_text)
+{
+	this->que = Open_Recipe(path_recipe);
+	this->text = Open_Text(path_text);
 }

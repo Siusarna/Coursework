@@ -8,4 +8,5 @@ int main() {
 	Robot text_editor("recipe.txt", "text.txt");
 	text_editor.start_work();
 	system("pause");
+	return 0;
 }

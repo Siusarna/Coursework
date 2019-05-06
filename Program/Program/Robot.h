@@ -1,3 +1,4 @@
+#pragma once
 #include <queue>
 #include <vector>
 #include <string>
@@ -35,8 +36,3 @@ private:
 	
 };
 
-Robot::Robot(string path_recipe, string path_text)
-{
-	this->que = Open_Recipe(path_recipe);
-	this->text = Open_Text(path_text);
-}
