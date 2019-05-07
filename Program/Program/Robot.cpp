@@ -271,12 +271,26 @@ void Robot::parce_for_replace(string recipe, int &from, int &to, vector<string> 
 			{
 				to = stoi(temp);
 				getline(s, temp, '"');
-				getline(s, temp, '"');
-				stringstream ss(temp);
-				getline(ss, temp1, '\n');
-				do {
-					text_from.push_back(temp1);
-				} while (getline(ss, temp1, '\n'));
+				getline(s, temp);
+				temp1 = "";
+				for (int i = 0; i < temp.size(); i++) {
+					if (temp[i] == '\\' && temp[i + 1] == 'n') {
+						text_from.push_back(temp1);
+						i++;
+						temp1.clear();
+					}
+					else if (temp[i] == '\\' && temp[i + 1] == '"') {
+						temp1 += '"';
+						i++;
+					}
+					else if (temp[i] == '\\' && temp[i + 1] == '\\') {
+						temp += '\\';
+					}
+					else if (temp[i] == '\\') {
+						temp1 += '\\';
+					}
+					else temp1 += temp[i];
+				}
 			}
 			catch (const std::exception&)
 			{
@@ -285,12 +299,26 @@ void Robot::parce_for_replace(string recipe, int &from, int &to, vector<string> 
 		}
 		if (temp == "with") {
 			getline(s, temp, '"');
-			getline(s, temp, '"');
-			stringstream ss(temp);
-			getline(ss, temp1, '\n');
-			do {
-				text_to.push_back(temp1);
-			} while (getline(ss, temp1, '\n'));
+			getline(s, temp);
+			temp1 = "";
+			for (int i = 0; i < temp.size(); i++) {
+				if (temp[i] == '\\' && temp[i + 1] == 'n') {
+					text_to.push_back(temp1);
+					i++;
+					temp1.clear();
+				}
+				else if (temp[i] == '\\' && temp[i + 1] == '"') {
+					temp1 += '"';
+					i++;
+				}
+				else if (temp[i] == '\\' && temp[i + 1] == '\\') {
+					temp += '\\';
+				}
+				else if (temp[i] == '\\') {
+					temp1 += '\\';
+				}
+				else temp1 += temp[i];
+			}
 		}
 	} while (getline(s, temp, ' '));
 }
