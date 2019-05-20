@@ -21,51 +21,41 @@ bool parce_row(string &row) {
 queue<option> Robot::Open_Recipe(string path) {
 	ifstream fin;
 	fin.open(path);
-	if (!fin.is_open()) {
-		cout << "Помилка відкриття файлу!" << endl;
-		system("pause");
-	}
-	else {
-		queue<option> q;
-		string str;
-		string t;
-		option temp;
-		while (!fin.eof()) {
-			getline(fin, str);
-			t = str;
-			if (parce_row(str)) {
-				temp.word = str;
-				temp.row = t;
-				q.push(temp);
-			}
+	queue<option> q;
+	string str;
+	string t;
+	option temp;
+	while (!fin.eof()) {
+		getline(fin, str);
+		t = str;
+		if (parce_row(str)) {
+			temp.word = str;
+			temp.row = t;
+			q.push(temp);
 		}
-		return q;
 	}
+	return q;
 }
 
 vector<string> Robot::Open_Text(string path) {
 	ifstream fin;
 	fin.open(path);
-	if (!fin.is_open()) {
-		cout << "Помилка відкриття файлу!" << endl;
-		system("pause");
+	vector<string> q;
+	string str;
+	while (!fin.eof()) {
+		getline(fin, str);
+		q.push_back(str);
 	}
-	else {
-		vector<string> q;
-		string str;
-		while (!fin.eof()) {
-			getline(fin, str);
-			q.push_back(str);
-		}
-		return q;
-	}
+	return q;
 }
 
 void Robot::delete_text(option recipe) {
 	int from =0;
 	int to =0;
 	parce_for_delete(recipe.row, from, to);
-	this->text.erase(this->text.begin() + from, this->text.begin() + to);
+	if (from < 1) from = 1;
+	if (to > this->text.size()) to = this->text.size();
+	this->text.erase(this->text.begin() + from-1, this->text.begin() + to);
 }
 
 void Robot::parce_for_delete(string recipe, int &from, int &to) {
@@ -82,9 +72,14 @@ void Robot::parce_for_delete(string recipe, int &from, int &to) {
 			{
 				from = stoi(temp);
 			}
-			catch (const std::exception&)
+			catch (const std::exception& ex)
 			{
-				cout << "Error";
+				System::String ^err_name = gcnew System::String("Помилка");
+				System::String ^err_descr = gcnew System::String(ex.what());
+				err_descr += gcnew System::String(". Поміняйте рецепт та запустіть робота ще раз");
+				System::Windows::Forms::MessageBox::Show(err_descr, err_name, System::Windows::Forms::MessageBoxButtons::OK, System::Windows::Forms::MessageBoxIcon::Error);
+				delete err_name;
+				delete err_descr;
 			}
 			
 		}
@@ -94,9 +89,15 @@ void Robot::parce_for_delete(string recipe, int &from, int &to) {
 			{
 				to = stoi(temp);
 			}
-			catch (const std::exception&)
+			catch (const std::exception& ex)
 			{
-				cout << "Error";
+				System::String ^err_name = gcnew System::String("Помилка");
+				System::String ^err_descr = gcnew System::String(ex.what());
+				err_descr += gcnew System::String(". Поміняйте рецепт та запустіть робота ще раз");
+				System::Windows::Forms::MessageBox::Show(err_descr, err_name, System::Windows::Forms::MessageBoxButtons::OK, System::Windows::Forms::MessageBoxIcon::Error);
+				delete err_name;
+				delete err_descr;
+				System::Windows::Forms::Application::Exit();
 			}
 		}
 	} while (getline(s, temp, ' '));
@@ -107,25 +108,31 @@ void Robot::change_text(option recipe) {
 	int to;
 	vector<string> text_for_change;
 	parce_for_change(recipe.row, from, to, text_for_change);
+	if (from > 0) from--;
+	if (from < 1) from = 0;
+	if (to > this->text.size()) to = this->text.size();
 	if ((to - from) > text_for_change.size()) {
-		this->text.erase(this->text.begin() + text_for_change.size() , this->text.begin() + to);
+		this->text.erase(this->text.begin() + from + text_for_change.size()-1 , this->text.begin() + to-1);
 		for (unsigned int i = 0; i < text_for_change.size(); i++) {
-			this->text[i + from - 1] = text_for_change[i];
+			this->text[i + from] = text_for_change[i];
 		}
 	}
 	else {
-		for (unsigned int i = from-1; i < to; i++) {
-			this->text[i] = text_for_change[i];
+		int k = 0;
+		for (unsigned int i = from; i < to; i++) {
+			this->text[i] = text_for_change[k];
+			k++;
 		}
 		for (unsigned int i = to; i < text_for_change.size(); i++) {
-			this->text.insert(this->text.begin() + i, text_for_change[i]);
+			this->text.insert(this->text.begin() + i, text_for_change[k]);
+			k++;
 		}
 	}
 }
 
 void Robot::parce_for_change(string recipe, int &from, int &to, vector<string> &text_for_change) {
 	if (recipe.find("from") == string::npos) from = 0;
-	if (recipe.find("to") == string::npos) to = this->text.size() - 1;
+	if (recipe.find("to") == string::npos) to = this->text.size();
 	string temp, temp1;
 	stringstream s(recipe);
 	getline(s, temp, ' ');
@@ -136,11 +143,15 @@ void Robot::parce_for_change(string recipe, int &from, int &to, vector<string> &
 			{
 				from = stoi(temp);
 			}
-			catch (const std::exception&)
+			catch (const std::exception& ex)
 			{
-				cout << "Error";
+				System::String ^err_name = gcnew System::String("Помилка");
+				System::String ^err_descr = gcnew System::String(ex.what());
+				err_descr += gcnew System::String(". Поміняйте рецепт та запустіть робота ще раз");
+				System::Windows::Forms::MessageBox::Show(err_descr, err_name, System::Windows::Forms::MessageBoxButtons::OK, System::Windows::Forms::MessageBoxIcon::Error);
+				delete err_name;
+				delete err_descr;
 			}
-
 		}
 		if (temp == "to") {
 			getline(s, temp, ' ');
@@ -148,9 +159,14 @@ void Robot::parce_for_change(string recipe, int &from, int &to, vector<string> &
 			{
 				to = stoi(temp);
 			}
-			catch (const std::exception&)
+			catch (const std::exception& ex)
 			{
-				cout << "Error";
+				System::String ^err_name = gcnew System::String("Помилка");
+				System::String ^err_descr = gcnew System::String(ex.what());
+				err_descr += gcnew System::String(". Поміняйте рецепт та запустіть робота ще раз");
+				System::Windows::Forms::MessageBox::Show(err_descr, err_name, System::Windows::Forms::MessageBoxButtons::OK, System::Windows::Forms::MessageBoxIcon::Error);
+				delete err_name;
+				delete err_descr;
 			}
 		}
 		if (temp == "with") {
@@ -158,7 +174,7 @@ void Robot::parce_for_change(string recipe, int &from, int &to, vector<string> &
 			getline(s, temp);
 			temp1 = "";
 			for (int i = 0; i < temp.size(); i++) {
-				if (temp[i] == '\\' && temp[i + 1] == 'n') {
+				if (temp[i] == '\\' && temp[i + 1] == 'n' || temp[i] == '"') {
 					text_for_change.push_back(temp1);
 					i++;
 					temp1.clear();
@@ -183,6 +199,8 @@ void Robot::insert_text(option recipe) {
 	int after; 
 	vector<string> text_for_insert;
 	parce_for_insert(recipe.row, after, text_for_insert);
+	if (after < 1) after = 1;
+	if (after > this->text.size()) after = this->text.size();
 	int k = 0;
 	for (unsigned int i = 0; i < text_for_insert.size(); i++) {
 		this->text.insert(this->text.begin()+after+k, text_for_insert[k]);
@@ -201,15 +219,20 @@ void Robot::parce_for_insert(string recipe, int &after, vector<string> &text_for
 			{
 				after = stoi(temp);
 			}
-			catch (const std::exception&)
+			catch (const std::exception& ex)
 			{
-				cout << "Error";
+				System::String ^err_name = gcnew System::String("Помилка");
+				System::String ^err_descr = gcnew System::String(ex.what());
+				err_descr += gcnew System::String(". Поміняйте рецепт та запустіть робота ще раз");
+				System::Windows::Forms::MessageBox::Show(err_descr, err_name, System::Windows::Forms::MessageBoxButtons::OK, System::Windows::Forms::MessageBoxIcon::Error);
+				delete err_name;
+				delete err_descr;
 			}
 			getline(s, temp, '"');
 			getline(s, temp);
 			temp1 = "";
 			for (int i = 0; i < temp.size(); i++) {
-				if (temp[i] == '\\' && temp[i + 1] == 'n') {
+				if (temp[i] == '\\' && temp[i + 1] == 'n' || temp[i] =='"') {
 					text_for_insert.push_back(temp1);
 					i++;
 					temp1.clear();
@@ -235,12 +258,53 @@ void Robot::replace_text(option recipe) {
 	size_t pos;
 	vector<string> text_from, text_to;
 	parce_for_replace(recipe.row, from, to, text_from, text_to);
+	if (from < 1) from = 1;
+	if (to > this->text.size()) to = this->text.size();
 	if (text_from.size() == 1) {
 		for (int i = from - 1; i < to; i++) {
 			pos = 0;
 			while ((pos = this->text[i].find(text_from[0], pos)) != string::npos) {
 				this->text[i].replace(pos, text_from[0].length(), text_to[0]);
 				pos += text_to[0].length();
+				if (text_to.size() > 1) {
+					string save;
+					for (int l = pos; l < this->text[i].size(); l++) {
+						save += this->text[i][l];
+					}
+					int size = this->text[i].size();
+					this->text[i].erase(this->text[i].begin() + pos, this->text[i].begin() + size );
+					int k = 1;
+					for (int j = 1; j < text_to.size(); j++) {
+						this->text.insert(this->text.begin() + i + k, text_to[k]);
+						to++;
+						k++;
+					}
+					this->text[i + text_to.size()-1] += save;
+				}
+			}	
+		}
+	}
+	else {
+		for (int i = from-1; i < to-1; i++) {
+			bool flag=true;
+			for (int k = 0; k < text_from.size(); k++) {
+				for (int j = 0; j < this->text[i].size(); j++) {
+					if (this->text[i + k][j] != text_from[k][j]) {
+						flag = false;
+						break;
+					}
+				}
+			}
+			if (flag) {
+				int k;
+				for (k = 0; k < text_to.size(); k++) {
+					for (int j = 0; j < this->text[i].size(); j++) {
+						this->text[i + k][j] = text_to[k][j];
+					}
+				}
+				if (text_from.size() > text_to.size()) {
+					this->text.erase(this->text.begin() + i + k, this->text.begin() + i + k + (text_from.size() - text_to.size()));
+				}
 			}
 		}
 	}
@@ -259,9 +323,14 @@ void Robot::parce_for_replace(string recipe, int &from, int &to, vector<string> 
 			{
 				from = stoi(temp);
 			}
-			catch (const std::exception&)
+			catch (const std::exception& ex)
 			{
-				cout << "Error";
+				System::String ^err_name = gcnew System::String("Помилка");
+				System::String ^err_descr = gcnew System::String(ex.what());
+				err_descr += gcnew System::String(". Поміняйте рецепт та запустіть робота ще раз");
+				System::Windows::Forms::MessageBox::Show(err_descr, err_name, System::Windows::Forms::MessageBoxButtons::OK, System::Windows::Forms::MessageBoxIcon::Error);
+				delete err_name;
+				delete err_descr;
 			}
 
 		}
@@ -271,7 +340,7 @@ void Robot::parce_for_replace(string recipe, int &from, int &to, vector<string> 
 			{
 				to = stoi(temp);
 				getline(s, temp, '"');
-				getline(s, temp);
+				getline(s, temp, '"');
 				temp1 = "";
 				for (int i = 0; i < temp.size(); i++) {
 					if (temp[i] == '\\' && temp[i + 1] == 'n') {
@@ -291,15 +360,21 @@ void Robot::parce_for_replace(string recipe, int &from, int &to, vector<string> 
 					}
 					else temp1 += temp[i];
 				}
+				text_from.push_back(temp1);
 			}
-			catch (const std::exception&)
+			catch (const std::exception& ex)
 			{
-				cout << "Error";
+				System::String ^err_name = gcnew System::String("Помилка");
+				System::String ^err_descr = gcnew System::String(ex.what());
+				err_descr += gcnew System::String(". Поміняйте рецепт та запустіть робота ще раз");
+				System::Windows::Forms::MessageBox::Show(err_descr, err_name, System::Windows::Forms::MessageBoxButtons::OK, System::Windows::Forms::MessageBoxIcon::Error);
+				delete err_name;
+				delete err_descr;
 			}
 		}
 		if (temp == "with") {
 			getline(s, temp, '"');
-			getline(s, temp);
+			getline(s, temp, '"');
 			temp1 = "";
 			for (int i = 0; i < temp.size(); i++) {
 				if (temp[i] == '\\' && temp[i + 1] == 'n') {
@@ -319,6 +394,7 @@ void Robot::parce_for_replace(string recipe, int &from, int &to, vector<string> 
 				}
 				else temp1 += temp[i];
 			}
+			text_to.push_back(temp1);
 		}
 	} while (getline(s, temp, ' '));
 }
@@ -340,10 +416,12 @@ void Robot::start_work() {
 	queue<option> temp = reversQueue(this->que);
 	string str;
 	queue<option> temp1;
-	for(unsigned int i=0;i<temp.size();i++) {
+	unsigned int size = temp.size();
+	for(unsigned int i=0;i<size;i++) {
 		if (temp.front().word == "undo") {
 			temp.pop();
 			temp.pop();
+			size--;
 		}
 		else {
 			temp1.push(temp.front());
@@ -369,4 +447,6 @@ Robot::Robot(string path_recipe, string path_text)
 {
 	this->que = Open_Recipe(path_recipe);
 	this->text = Open_Text(path_text);
+	this->path_recipe = path_recipe;
+	this->path_text = path_text;
 }
