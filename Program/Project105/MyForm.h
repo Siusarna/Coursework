@@ -143,7 +143,7 @@ namespace Project105 {
 			this->label4->Name = L"label4";
 			this->label4->Size = System::Drawing::Size(46, 17);
 			this->label4->TabIndex = 5;
-			this->label4->Text = L"label4";
+			this->label4->Text = L"";
 			this->label4->Visible = false;
 			// 
 			// textBox1
@@ -172,7 +172,8 @@ namespace Project105 {
 			// button3
 			// 
 			this->button3->BackColor = System::Drawing::SystemColors::Desktop;
-			this->button3->Location = System::Drawing::Point(136, 204);
+			this->button3->ForeColor = System::Drawing::SystemColors::ButtonFace;
+			this->button3->Location = System::Drawing::Point(136, 211);
 			this->button3->Margin = System::Windows::Forms::Padding(0);
 			this->button3->Name = L"button3";
 			this->button3->Size = System::Drawing::Size(176, 48);
@@ -239,7 +240,7 @@ namespace Project105 {
 		Stream^ myStream;
 		OpenFileDialog^ openFileDialog1 = gcnew OpenFileDialog;
 
-		openFileDialog1->InitialDirectory = "b:\\Test";
+		openFileDialog1->InitialDirectory = "b:\KPI\OP\Coursework\Test";
 		openFileDialog1->Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
 		openFileDialog1->FilterIndex = 1;
 		openFileDialog1->RestoreDirectory = true;
@@ -270,8 +271,22 @@ namespace Project105 {
 	private: System::Void button3_Click(System::Object^  sender, System::EventArgs^  e) {
 		string recipe = msclr::interop::marshal_as<std::string>(label4->Text);
 		string text = msclr::interop::marshal_as<std::string>(label2->Text);
-		Robot text_editor(recipe, text);
-		text_editor.start_work();
+		if (label4->Text->Length == 0) {
+			System::String^ err_name = gcnew System::String("Помилка");
+			System::String^ err_descr = gcnew System::String("Ви не вибрали файл-рецепт");
+			System::Windows::Forms::MessageBox::Show(err_descr, err_name, System::Windows::Forms::MessageBoxButtons::OK, System::Windows::Forms::MessageBoxIcon::Error);
+		}
+		else if (label2->Text->Length == 0) {
+			System::String^ err_name = gcnew System::String("Помилка");
+			System::String^ err_descr = gcnew System::String("Ви не вибрали файл для редагування");
+			System::Windows::Forms::MessageBox::Show(err_descr, err_name, System::Windows::Forms::MessageBoxButtons::OK, System::Windows::Forms::MessageBoxIcon::Error);
+		}
+		else {
+			Robot text_editor(recipe, text);
+			text_editor.start_work();
+			MessageBox::Show("Редагування виконано успішно");
+			label4->Text = "";
+		}
 	}
 };
 }

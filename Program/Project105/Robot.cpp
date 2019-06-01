@@ -80,6 +80,7 @@ void Robot::parce_for_delete(string recipe, int &from, int &to) {
 				System::Windows::Forms::MessageBox::Show(err_descr, err_name, System::Windows::Forms::MessageBoxButtons::OK, System::Windows::Forms::MessageBoxIcon::Error);
 				delete err_name;
 				delete err_descr;
+				System::Windows::Forms::Application::Exit();
 			}
 			
 		}
@@ -151,6 +152,7 @@ void Robot::parce_for_change(string recipe, int &from, int &to, vector<string> &
 				System::Windows::Forms::MessageBox::Show(err_descr, err_name, System::Windows::Forms::MessageBoxButtons::OK, System::Windows::Forms::MessageBoxIcon::Error);
 				delete err_name;
 				delete err_descr;
+				System::Windows::Forms::Application::Exit();
 			}
 		}
 		if (temp == "to") {
@@ -167,6 +169,7 @@ void Robot::parce_for_change(string recipe, int &from, int &to, vector<string> &
 				System::Windows::Forms::MessageBox::Show(err_descr, err_name, System::Windows::Forms::MessageBoxButtons::OK, System::Windows::Forms::MessageBoxIcon::Error);
 				delete err_name;
 				delete err_descr;
+				System::Windows::Forms::Application::Exit();
 			}
 		}
 		if (temp == "with") {
@@ -227,6 +230,7 @@ void Robot::parce_for_insert(string recipe, int &after, vector<string> &text_for
 				System::Windows::Forms::MessageBox::Show(err_descr, err_name, System::Windows::Forms::MessageBoxButtons::OK, System::Windows::Forms::MessageBoxIcon::Error);
 				delete err_name;
 				delete err_descr;
+				System::Windows::Forms::Application::Exit();
 			}
 			getline(s, temp, '"');
 			getline(s, temp);
@@ -331,6 +335,7 @@ void Robot::parce_for_replace(string recipe, int &from, int &to, vector<string> 
 				System::Windows::Forms::MessageBox::Show(err_descr, err_name, System::Windows::Forms::MessageBoxButtons::OK, System::Windows::Forms::MessageBoxIcon::Error);
 				delete err_name;
 				delete err_descr;
+				System::Windows::Forms::Application::Exit();
 			}
 
 		}
@@ -370,6 +375,7 @@ void Robot::parce_for_replace(string recipe, int &from, int &to, vector<string> 
 				System::Windows::Forms::MessageBox::Show(err_descr, err_name, System::Windows::Forms::MessageBoxButtons::OK, System::Windows::Forms::MessageBoxIcon::Error);
 				delete err_name;
 				delete err_descr;
+				System::Windows::Forms::Application::Exit();
 			}
 		}
 		if (temp == "with") {
