@@ -1,0 +1,1 @@
+replace from 2 to 5 "g" with "FFFFFFF"

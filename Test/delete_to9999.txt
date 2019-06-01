@@ -1,0 +1,1 @@
+delete from 5 to 99999

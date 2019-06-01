@@ -1,0 +1,1 @@
+replace from -1 to 5 "1 alksjd\n2 sfdg s" with "FFFFFFF"

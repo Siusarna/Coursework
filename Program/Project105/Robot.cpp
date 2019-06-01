@@ -300,10 +300,27 @@ void Robot::replace_text(option recipe) {
 				}
 			}
 			if (flag) {
-				int k;
-				for (k = 0; k < text_to.size(); k++) {
-					for (int j = 0; j < this->text[i].size(); j++) {
-						this->text[i + k][j] = text_to[k][j];
+				int k=0;
+				if (text_to.size() > text_from.size()) {
+					for (k = 0; k < text_from.size(); k++) {
+						if (this->text[i + k].size() < text_to[k].size()) {
+							int j = 0;
+							while (j < this->text[i].size()) {
+								this->text[i + k][j] = text_to[k][j];
+								j++;
+							}
+							for (int q = j; q < text_to[k].size(); q++) {
+								this->text[i + k] += text[k][q];
+							}
+						}
+						else {
+							for (int j = 0; j < text_to[k].size(); j++) {
+								this->text[i + k][j] = text_to[k][j];
+							}
+						}
+					}
+					for (int y = 0; y < text_to.size()-k; y++) {
+						this->text.insert(this->text.begin() + i + k, text_to[k+y]);
 					}
 				}
 				if (text_from.size() > text_to.size()) {
@@ -380,7 +397,7 @@ void Robot::parce_for_replace(string recipe, int &from, int &to, vector<string> 
 		}
 		if (temp == "with") {
 			getline(s, temp, '"');
-			getline(s, temp, '"');
+			getline(s, temp);
 			temp1 = "";
 			for (int i = 0; i < temp.size(); i++) {
 				if (temp[i] == '\\' && temp[i + 1] == 'n') {
