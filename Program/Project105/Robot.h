@@ -1,4 +1,8 @@
 #pragma once
+#include <fstream>
+#include <sstream>
+#include <iostream>
+#include <stack>
 #include <queue>
 #include <vector>
 #include <string>

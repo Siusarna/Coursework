@@ -135,7 +135,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Change.cpp" />
+    <ClCompile Include="Delete.cpp" />
+    <ClCompile Include="Insert.cpp" />
     <ClCompile Include="MyForm.cpp" />
+    <ClCompile Include="Replace.cpp" />
     <ClCompile Include="Robot.cpp" />
   </ItemGroup>
   <ItemGroup>

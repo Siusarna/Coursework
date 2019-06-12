@@ -211,7 +211,7 @@ namespace Project105 {
 		OpenFileDialog^ openFileDialog1 = gcnew OpenFileDialog;
 
 		openFileDialog1->InitialDirectory = "b:\\Test";
-		openFileDialog1->Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+		openFileDialog1->Filter = "txt files (*.txt)|*.txt";
 		openFileDialog1->FilterIndex = 1;
 		openFileDialog1->RestoreDirectory = true;
 
@@ -241,7 +241,7 @@ namespace Project105 {
 		OpenFileDialog^ openFileDialog1 = gcnew OpenFileDialog;
 
 		openFileDialog1->InitialDirectory = "b:\KPI\OP\Coursework\Test";
-		openFileDialog1->Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+		openFileDialog1->Filter = "txt files (*.txt)|*.txt";
 		openFileDialog1->FilterIndex = 1;
 		openFileDialog1->RestoreDirectory = true;
 

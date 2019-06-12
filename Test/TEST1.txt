@@ -1,0 +1,5 @@
+delete from 6 to 999
+change from -1 to 1 with "TEST TEST TEST"
+insert after 5 "INSERT"
+delete
+undo
